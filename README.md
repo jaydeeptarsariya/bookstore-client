@@ -1,7 +1,3 @@
-- **REST API**: It communicates with the backend using RESTful API endpoints to perform CRUD operations on books.
-
-- **User Interface**: The frontend provides a user interface for viewing, adding, editing, and deleting book entries.
-
 ## Installation
 
 1. Clone the repository:
