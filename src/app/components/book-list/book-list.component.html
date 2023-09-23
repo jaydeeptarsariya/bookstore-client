@@ -2,7 +2,7 @@
     <div class="card text-center">
       <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
         {{book.title}}
-        <button class="btn btn-danger" (click)="deleteBook(book.id)">
+        <button class="btn btn-danger" (click)="openConfirmationDialog(book.id)">
           <i class="far fa-trash-alt"></i>
         </button>
       </div>

@@ -1,5 +1,7 @@
 import { Component, OnInit, HostBinding } from '@angular/core';
 import { BooksService } from 'src/app/services/books.service';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-book-list',
@@ -12,10 +14,21 @@ export class BookListComponent implements OnInit {
 
   books: any = [];
 
-  constructor(private bookservice: BooksService) { }
+  constructor(private bookservice: BooksService, private dialog: MatDialog) { }
 
   ngOnInit() {
     this.getBooks();
+  }
+
+  openConfirmationDialog(bookId: string) {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent);
+  
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === true) {
+        // User confirmed the delete action
+        this.deleteBook(bookId);
+      }
+    });
   }
 
   getBooks() {
@@ -30,13 +43,12 @@ export class BookListComponent implements OnInit {
   }
 
   deleteBook(id: string) {
-    this.bookservice.deleteBook(id)
-      .subscribe(
-        res => {
-          console.log(res);
-          this.getBooks();
-        },
-        err => console.error(err)
-      )
+    this.bookservice.deleteBook(id).subscribe(
+      (res) => {
+        console.log(res);
+        this.getBooks();
+      },
+      (err) => console.error(err)
+    );
   }
 }

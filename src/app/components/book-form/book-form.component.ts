@@ -1,4 +1,5 @@
 import { Component, HostBinding, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Book } from 'src/app/models/book';
 import { Router, ActivatedRoute } from '@angular/router';
 import { BooksService } from 'src/app/services/books.service';
@@ -21,10 +22,22 @@ export class BookFormComponent implements OnInit{
   };
 
   edit: boolean = false;
+  bookForm!: FormGroup;
 
-  constructor(private bookService: BooksService, private router: Router, private activatedRoute: ActivatedRoute) {}
+  constructor(
+    private fb: FormBuilder,
+    private bookService: BooksService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute
+    ) {}
 
   ngOnInit() {
+    this.bookForm = this.fb.group({
+      title: ['', [Validators.required]],
+      description: ['', [Validators.required]],
+      image: ['', [Validators.required, Validators.pattern(/https?:\/\/.+\.(?:png|jpg|jpeg|gif|png)/i)]],
+    });
+
     const params = this.activatedRoute.snapshot.params;
     console.log(params);
     if (params['id']) {
@@ -41,18 +54,24 @@ export class BookFormComponent implements OnInit{
   }
 
   saveNewBook() {
-    delete this.book.created_at;
-    delete this.book.id;
-    this.bookService.saveBook(this.book).subscribe({
-      next: (res: any) => {
-        console.log(res);
-        this.router.navigate(['books']);
-      },
-      error: (err) => {
-        console.error(err)
-      }
-    })
+    if (this.bookForm.valid) { // Check if the form is valid
+      // If the form is valid, proceed to save the book
+      const newBook = this.bookForm.value;
+      delete newBook.created_at;
+      delete newBook.id;
+  
+      this.bookService.saveBook(newBook).subscribe({
+        next: (res: any) => {
+          console.log(res);
+          this.router.navigate(['books']);
+        },
+        error: (err) => {
+          console.error(err);
+        },
+      });
+    }
   }
+  
 
   updateBook() {
     let id: any = this.book.id
@@ -66,5 +85,9 @@ export class BookFormComponent implements OnInit{
         console.error(err)
       }
     })
+  }
+
+  get isFormValid(): boolean {
+    return this.bookForm.valid;
   }
 }
